@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sonic Architect - My Calls</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#283044",
+              "on-primary-container": "#00422b",
+              "on-secondary-fixed": "#2a1700",
+              "on-tertiary-container": "#79000e",
+              "surface-container-lowest": "#060e20",
+              "inverse-primary": "#006c49",
+              "outline-variant": "#3c4a42",
+              "on-surface-variant": "#bbcabf",
+              "secondary-fixed-dim": "#ffb95f",
+              "secondary": "#ffb95f",
+              "on-tertiary": "#68000a",
+              "on-primary-fixed": "#002113",
+              "tertiary": "#ffb3ad",
+              "on-primary": "#003824",
+              "surface-variant": "#2d3449",
+              "on-background": "#dae2fd",
+              "error-container": "#93000a",
+              "surface-container-high": "#222a3d",
+              "surface": "#0b1326",
+              "surface-bright": "#31394d",
+              "on-error": "#690005",
+              "on-surface": "#dae2fd",
+              "tertiary-fixed": "#ffdad7",
+              "tertiary-container": "#ff7a73",
+              "background": "#0b1326",
+              "on-primary-fixed-variant": "#005236",
+              "outline": "#86948a",
+              "secondary-container": "#ee9800",
+              "surface-container-highest": "#2d3449",
+              "surface-container-low": "#131b2e",
+              "error": "#ffb4ab",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "on-tertiary-fixed": "#410004",
+              "primary-fixed": "#6ffbbe",
+              "surface-tint": "#4edea3",
+              "on-secondary-fixed-variant": "#653e00",
+              "on-secondary-container": "#5b3800",
+              "primary-container": "#10b981",
+              "surface-dim": "#0b1326",
+              "surface-container": "#171f33",
+              "secondary-fixed": "#ffddb8",
+              "on-tertiary-fixed-variant": "#930013",
+              "primary": "#4edea3",
+              "inverse-surface": "#dae2fd",
+              "on-secondary": "#472a00",
+              "on-error-container": "#ffdad6",
+              "primary-fixed-dim": "#4edea3"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-slate-100 dark:bg-[#131b2e] no-line tonal-shift flat no-shadows">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
+<img alt="Agent Profile Picture" class="w-full h-full object-cover" data-alt="close-up portrait of a professional male agent with a friendly expression in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGhbIEmRkFzfmJw6pHvljVy4BqExIP7lW4kCU2It4HT8YyPuKnoRIMbgXOwJalUl-Z6x3CQvX9ZG9p0WTNLp5zDA3EoalwlRbUWD8wTlsfi6MUAhUKW7h1_ZLFJYqUDIy6hMAWKjmpxBfrtLMwxZCdJeslfsR1RC0Ew0Ir89g8uhBOQT9yTeqXu5lSm30nwD1x3ZQGaXm0_VXEUj7e9T8eC4b0J1CHamSh92JVxYiJgvWhVYjN1eTnGTWfuf31ASjbSuP4VAi1SHk"/>
+</div>
+<h1 class="text-emerald-700 dark:text-[#10B981] font-black tracking-tighter text-xl uppercase font-headline">Sonic Architect</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-[#222a3d] transition-colors scale-95 active:opacity-80 transition-all text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 mb-24 px-6 pt-6">
+<!-- Search & Filter Section -->
+<section class="mb-8 space-y-6">
+<div class="flex flex-col gap-2">
+<span class="text-[11px] font-medium uppercase tracking-widest text-primary/70 font-label">Intelligence Archive</span>
+<h2 class="text-3xl font-bold tracking-tight text-on-surface">Call History</h2>
+</div>
+<!-- Custom Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">search</span>
+</div>
+<input class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary/30 rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant/50 transition-all" placeholder="Search transcripts, IDs, or sentiment..." type="text"/>
+</div>
+<!-- Filter Chips - Horizontal Scroll -->
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<button class="px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container text-sm font-semibold whitespace-nowrap transition-all active:scale-95 shadow-lg shadow-primary/10">All</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-medium whitespace-nowrap hover:bg-surface-bright transition-all active:scale-95">Today</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-medium whitespace-nowrap hover:bg-surface-bright transition-all active:scale-95">Week</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-medium whitespace-nowrap hover:bg-surface-bright transition-all active:scale-95">Month</button>
+</div>
+</section>
+<!-- Dynamic List of Call Cards -->
+<div class="space-y-4">
+<!-- Call Card 1: Critical/Escalating -->
+<div class="bg-surface-container-low rounded-xl p-5 group hover:bg-surface-container-high transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-secondary rounded-full"></div>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">ID: CA-90210</p>
+<h3 class="text-lg font-bold text-on-surface">Technical Escalation</h3>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="cloud_done" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+<span class="text-[11px] text-on-surface-variant mt-1">Uploaded</span>
+</div>
+</div>
+<div class="flex gap-2 mb-4">
+<span class="px-2 py-0.5 rounded bg-secondary/10 text-secondary text-[10px] font-bold uppercase">High Latency</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase">12:45 min</span>
+</div>
+<div class="bg-surface-container-lowest/50 rounded-lg p-3 mb-4">
+<p class="text-sm text-on-surface-variant leading-relaxed">
+<span class="text-secondary font-bold">AI Summary:</span> Customer reported intermittent connectivity. Tone shifted to frustrated at 04:22. Resolution pending tier 2 review.
+                    </p>
+</div>
+<div class="flex justify-between items-center text-[12px] text-on-surface-variant/70">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> Oct 24, 02:15 PM</span>
+<span class="font-medium text-primary">View Analysis →</span>
+</div>
+</div>
+<!-- Call Card 2: Positive/Resolved -->
+<div class="bg-surface-container-low rounded-xl p-5 group hover:bg-surface-container-high transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-primary rounded-full"></div>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">ID: CA-88432</p>
+<h3 class="text-lg font-bold text-on-surface">Plan Upgrade</h3>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="cloud_sync">cloud_sync</span>
+<span class="text-[11px] text-on-surface-variant mt-1">Syncing...</span>
+</div>
+</div>
+<div class="flex gap-2 mb-4">
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase">Resolved</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase">05:12 min</span>
+</div>
+<div class="bg-surface-container-lowest/50 rounded-lg p-3 mb-4">
+<p class="text-sm text-on-surface-variant leading-relaxed">
+<span class="text-primary font-bold">AI Summary:</span> Successful conversion to Enterprise plan. Sentiment remained positive throughout. Agent efficiency score: 98%.
+                    </p>
+</div>
+<div class="flex justify-between items-center text-[12px] text-on-surface-variant/70">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> Oct 24, 11:40 AM</span>
+<span class="font-medium text-primary">View Analysis →</span>
+</div>
+</div>
+<!-- Call Card 3: Generic -->
+<div class="bg-surface-container-low rounded-xl p-5 group hover:bg-surface-container-high transition-all duration-300 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-on-surface-variant/30 rounded-full"></div>
+<div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant opacity-60">ID: CA-87119</p>
+<h3 class="text-lg font-bold text-on-surface">General Inquiry</h3>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="material-symbols-outlined text-on-surface-variant/50 text-xl" data-icon="cloud_off">cloud_off</span>
+<span class="text-[11px] text-on-surface-variant mt-1">Local Only</span>
+</div>
+</div>
+<div class="flex gap-2 mb-4">
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase">Billing</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant text-[10px] font-bold uppercase">02:30 min</span>
+</div>
+<div class="bg-surface-container-lowest/50 rounded-lg p-3 mb-4">
+<p class="text-sm text-on-surface-variant leading-relaxed italic">
+                        Processing AI summary...
+                    </p>
+</div>
+<div class="flex justify-between items-center text-[12px] text-on-surface-variant/70">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">calendar_today</span> Oct 23, 04:55 PM</span>
+<span class="font-medium text-primary">View Analysis →</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-white/80 dark:bg-[#131b2e]/80 backdrop-blur-xl no-line tonal-shift border-t border-emerald-500/10 shadow-[0_-4px_24px_rgba(6,14,32,0.1)] rounded-t-2xl">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest">Home</span>
+</a>
+<!-- ACTIVE TAB: My Calls -->
+<a class="flex flex-col items-center justify-center bg-emerald-100 dark:bg-[#10B981]/20 text-emerald-800 dark:text-[#4edea3] rounded-xl px-4 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings_remote" style="font-variation-settings: 'FILL' 1;">settings_remote</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest">My Calls</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest">Profile</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="help_outline">help_outline</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest">Help</span>
+</a>
+</nav>
+<!-- FAB for quick action (contextual: Home/Dashboard, but hidden on list scroll by convention, shown here for completeness) -->
+<div class="fixed right-6 bottom-24 z-40">
+<button class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-container to-primary text-on-primary-container shadow-2xl shadow-primary/40 flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+</body></html>

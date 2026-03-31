@@ -1,0 +1,17 @@
+name: salestrack_backend
+description: "SalesTrack API server."
+version: 0.0.1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+  shelf_cors_headers: ^0.1.5
+
+  salestrack_shared:
+    path: ../shared_models
+
+dev_dependencies:
+  test: ^1.25.0

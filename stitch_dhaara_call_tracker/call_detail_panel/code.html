@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Call Detail - Precision Monitor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#e1e2e4",
+              "on-background": "#191c1e",
+              "surface-container-high": "#e7e8ea",
+              "surface": "#f8f9fb",
+              "error-container": "#ffdad6",
+              "on-primary-fixed": "#002113",
+              "on-tertiary": "#ffffff",
+              "secondary": "#855300",
+              "secondary-fixed-dim": "#ffb95f",
+              "on-primary": "#ffffff",
+              "tertiary": "#b91a24",
+              "inverse-primary": "#4edea3",
+              "on-tertiary-container": "#79000e",
+              "surface-container-lowest": "#ffffff",
+              "on-surface-variant": "#3c4a42",
+              "outline-variant": "#bbcabf",
+              "inverse-on-surface": "#f0f1f3",
+              "on-secondary-fixed": "#2a1700",
+              "on-primary-container": "#00422b",
+              "primary": "#006c49",
+              "inverse-surface": "#2e3132",
+              "primary-fixed-dim": "#4edea3",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "primary-container": "#10b981",
+              "surface-tint": "#006c49",
+              "on-secondary-fixed-variant": "#653e00",
+              "on-secondary-container": "#684000",
+              "surface-container": "#edeef0",
+              "secondary-fixed": "#ffddb8",
+              "on-tertiary-fixed-variant": "#930013",
+              "surface-dim": "#d9dadc",
+              "secondary-container": "#fea619",
+              "surface-container-highest": "#e1e2e4",
+              "surface-container-low": "#f3f4f6",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#005236",
+              "outline": "#6c7a71",
+              "primary-fixed": "#6ffbbe",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "on-tertiary-fixed": "#410004",
+              "on-surface": "#191c1e",
+              "on-error": "#ffffff",
+              "tertiary-fixed": "#ffdad7",
+              "surface-bright": "#f8f9fb",
+              "tertiary-container": "#ff7a73",
+              "background": "#f8f9fb"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(25, 28, 30, 0.85);
+        backdrop-filter: blur(24px);
+      }
+      body {
+        background-color: #0d0f10;
+        color: #e1e2e4;
+      }
+    </style>
+</head>
+<body class="font-body overflow-hidden">
+<!-- Background Layer (SideNavBar) -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-900 border-r border-white/5 py-8 px-6 z-0">
+<div class="mb-10">
+<h1 class="text-xl font-bold tracking-tighter text-emerald-500">Precision Monitor</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 mt-1">AI Voice Analytics</p>
+</div>
+<nav class="flex-1 space-y-2">
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 text-emerald-500 font-semibold border-r-4 border-emerald-600">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">mic_none</span>
+<span class="text-sm">Call Feed</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-sm">Agent Performance</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">assessment</span>
+<span class="text-sm">Reports</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm">Settings</span>
+</div>
+</nav>
+<div class="mt-auto pt-6 border-t border-white/5">
+<div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-sm">Manager Profile</span>
+</div>
+</div>
+</aside>
+<!-- Background Content (Simulated Feed) -->
+<main class="ml-64 p-8 opacity-40 pointer-events-none">
+<header class="flex justify-between items-center mb-12">
+<div>
+<h2 class="text-3xl font-bold tracking-tight text-white">Call Feed</h2>
+<p class="text-slate-400 mt-1">Monitoring 24 active voice streams</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-slate-800 h-10 w-48 rounded-lg"></div>
+<div class="bg-slate-800 h-10 w-10 rounded-lg"></div>
+</div>
+</header>
+<div class="grid grid-cols-1 gap-4">
+<div class="h-24 bg-slate-800/50 rounded-2xl"></div>
+<div class="h-24 bg-slate-800/50 rounded-2xl"></div>
+<div class="h-24 bg-slate-800/50 rounded-2xl"></div>
+<div class="h-24 bg-slate-800/50 rounded-2xl"></div>
+</div>
+</main>
+<!-- Overlay / Side Panel -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-end">
+<!-- Call Detail Panel -->
+<section class="w-full max-w-2xl h-full glass-panel border-l border-white/10 shadow-2xl flex flex-col">
+<!-- Panel Header -->
+<header class="p-8 pb-6 border-b border-white/5">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-2 text-emerald-400 mb-1">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span class="text-[10px] font-bold uppercase tracking-[0.2em]">Verified Secure Call</span>
+</div>
+<h2 class="text-2xl font-bold text-white tracking-tight">Call Recording #8829-X</h2>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="grid grid-cols-3 gap-6">
+<div class="space-y-1">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Agent</p>
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="professional corporate headshot of a smiling male agent in his early 30s with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCImJvqSuGSFJvGhVhPR05Jv6ozvomLds_UjFcN0y3zk2PBCv75K-vyjY9qUwxJa2dgeN-GzGxwFd5CR5dxxSGuGLsBQmE3IlKl_tRdJnMEQrR61BeWAHT8lf1oZhajgkhZujjoLrIBur9pWJrHuAst9PDhbQkTx4jM9T-t-lDEJ0Mv-eDCZIb9qzUZWTPrK7zPvADj10qERgEVT79svwTf0j1KfXzIC4iHsvfkN6RCXcDH_oTyfevAa6jHSvErsyWDvzf6d1N0yq4"/>
+<span class="text-sm font-medium text-white">Marcus Sterling</span>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Date &amp; Time</p>
+<p class="text-sm font-medium text-white">Oct 24, 2023 • 14:22</p>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Duration</p>
+<p class="text-sm font-medium text-white">12m 44s</p>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8 space-y-10">
+<!-- Audio Player -->
+<div class="bg-white/5 rounded-3xl p-6 border border-white/5">
+<div class="flex items-center gap-6 mb-4">
+<button class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-slate-900 hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="flex-1 space-y-2">
+<div class="flex justify-between text-[10px] font-bold text-slate-400">
+<span>04:12</span>
+<span>12:44</span>
+</div>
+<!-- Waveform Placeholder -->
+<div class="h-8 flex items-end gap-[2px]">
+<div class="w-1 h-3 bg-white/20 rounded-full"></div>
+<div class="w-1 h-5 bg-white/20 rounded-full"></div>
+<div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
+<div class="w-1 h-6 bg-emerald-500 rounded-full"></div>
+<div class="w-1 h-4 bg-emerald-500 rounded-full"></div>
+<div class="w-1 h-7 bg-white/20 rounded-full"></div>
+<div class="w-1 h-5 bg-white/20 rounded-full"></div>
+<div class="w-1 h-8 bg-white/20 rounded-full"></div>
+<div class="w-1 h-2 bg-white/20 rounded-full"></div>
+<div class="w-1 h-6 bg-white/20 rounded-full"></div>
+<div class="w-1 h-4 bg-white/20 rounded-full"></div>
+<div class="w-1 h-7 bg-white/20 rounded-full"></div>
+<div class="w-1 h-3 bg-white/20 rounded-full"></div>
+<div class="w-1 h-5 bg-white/20 rounded-full"></div>
+<div class="w-1 h-8 bg-white/20 rounded-full"></div>
+<div class="w-1 h-4 bg-white/20 rounded-full"></div>
+<div class="w-1 h-6 bg-white/20 rounded-full"></div>
+<div class="w-1 h-9 bg-white/20 rounded-full"></div>
+<div class="w-1 h-5 bg-white/20 rounded-full"></div>
+<div class="w-1 h-7 bg-white/20 rounded-full"></div>
+<div class="w-1 h-3 bg-white/20 rounded-full"></div>
+<div class="w-1 h-6 bg-white/20 rounded-full"></div>
+<div class="w-1 h-8 bg-white/20 rounded-full"></div>
+<div class="w-1 h-4 bg-white/20 rounded-full"></div>
+<div class="w-1 h-2 bg-white/20 rounded-full"></div>
+<div class="w-1 h-5 bg-white/20 rounded-full"></div>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-white">speed</span>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-white">volume_up</span>
+</div>
+</div>
+</div>
+<!-- Info Badges -->
+<div class="flex flex-wrap gap-3">
+<div class="flex items-center gap-2 bg-slate-800/80 px-4 py-2 rounded-full border border-white/5">
+<span class="text-[10px] text-slate-500 font-bold uppercase">Intent</span>
+<span class="text-xs font-semibold text-white">Billing Inquiry</span>
+</div>
+<div class="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
+<span class="text-[10px] text-emerald-500 font-bold uppercase">Outcome</span>
+<span class="text-xs font-semibold text-emerald-400">Resolved</span>
+</div>
+<div class="flex items-center gap-2 bg-amber-500/10 px-4 py-2 rounded-full border border-amber-500/20">
+<span class="text-[10px] text-amber-500 font-bold uppercase">Quality Score</span>
+<span class="text-xs font-semibold text-amber-400">88/100</span>
+</div>
+</div>
+<!-- AI Summary Section -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-400">auto_awesome</span>
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">AI Call Summary</h3>
+</div>
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-emerald-500/10 to-transparent rounded-2xl blur opacity-25 group-hover:opacity-40 transition-opacity"></div>
+<div class="relative bg-slate-900/50 p-6 rounded-2xl border border-white/5">
+<p class="text-slate-300 leading-relaxed text-sm">
+                                The customer called regarding a discrepancy in their most recent invoice. Agent Sterling effectively identified a double-billing error for the premium subscription tier. The agent successfully applied a credit of $24.99 and upsold the customer to the annual loyalty program, resulting in a positive retention outcome.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Sentiment Indicators -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-3">Customer Sentiment</p>
+<div class="flex items-center gap-4">
+<span class="text-3xl">😊</span>
+<div class="flex-1 space-y-1">
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 w-[72%]"></div>
+</div>
+<p class="text-[10px] text-emerald-400 font-medium">Positive (72%)</p>
+</div>
+</div>
+</div>
+<div class="bg-white/5 p-5 rounded-2xl border border-white/5">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-3">Agent Tone</p>
+<div class="flex items-center gap-4">
+<span class="text-3xl">🤝</span>
+<div class="flex-1 space-y-1">
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[94%]"></div>
+</div>
+<p class="text-[10px] text-emerald-400 font-medium">Empathetic (94%)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Items -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-400">task_alt</span>
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Follow-up actions</h3>
+</div>
+<ul class="space-y-2">
+<li class="flex items-center justify-between p-4 bg-white/5 rounded-xl group hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500 group-hover:text-emerald-400 transition-colors">check_circle</span>
+<span class="text-sm text-slate-300">Issue credit refund to customer account</span>
+</div>
+<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Done</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white/5 rounded-xl group hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500">radio_button_unchecked</span>
+<span class="text-sm text-slate-300">Email confirmation of loyalty plan</span>
+</div>
+<span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded">Pending</span>
+</li>
+<li class="flex items-center justify-between p-4 bg-white/5 rounded-xl group hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-500">radio_button_unchecked</span>
+<span class="text-sm text-slate-300">Log supervisor feedback on billing workflow</span>
+</div>
+<span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded">Pending</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Panel Footer Actions -->
+<footer class="p-8 border-t border-white/5 flex gap-4">
+<button class="flex-1 bg-gradient-to-r from-emerald-700 to-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all active:scale-[0.98]">
+                    Approve Resolution
+                </button>
+<button class="px-6 py-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-colors">
+<span class="material-symbols-outlined align-middle">share</span>
+</button>
+<button class="px-6 py-4 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-colors">
+<span class="material-symbols-outlined align-middle">more_vert</span>
+</button>
+</footer>
+</section>
+</div>
+</body></html>

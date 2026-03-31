@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Precision Monitor | Agent Performance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-variant": "#e1e2e4",
+                        "on-background": "#191c1e",
+                        "surface-container-high": "#e7e8ea",
+                        "surface": "#f8f9fb",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#002113",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#855300",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#b91a24",
+                        "inverse-primary": "#4edea3",
+                        "on-tertiary-container": "#79000e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#3c4a42",
+                        "outline-variant": "#bbcabf",
+                        "inverse-on-surface": "#f0f1f3",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-primary-container": "#00422b",
+                        "primary": "#006c49",
+                        "inverse-surface": "#2e3132",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#10b981",
+                        "surface-tint": "#006c49",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary-container": "#684000",
+                        "surface-container": "#edeef0",
+                        "secondary-fixed": "#ffddb8",
+                        "on-tertiary-fixed-variant": "#930013",
+                        "surface-dim": "#d9dadc",
+                        "secondary-container": "#fea619",
+                        "surface-container-highest": "#e1e2e4",
+                        "surface-container-low": "#f3f4f6",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#005236",
+                        "outline": "#6c7a71",
+                        "primary-fixed": "#6ffbbe",
+                        "tertiary-fixed-dim": "#ffb3ad",
+                        "on-tertiary-fixed": "#410004",
+                        "on-surface": "#191c1e",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdad7",
+                        "surface-bright": "#f8f9fb",
+                        "tertiary-container": "#ff7a73",
+                        "background": "#f8f9fb"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface dark:bg-[#0f1113] text-on-surface antialiased overflow-hidden">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-50 dark:bg-[#f3f4f6] font-['Inter'] antialiased text-sm tracking-tight shadow-[4px_0_24px_0_rgba(25,28,30,0.04)] z-50">
+<div class="flex flex-col justify-between py-8 px-6 h-full">
+<div>
+<!-- Brand Header -->
+<div class="mb-10 px-2">
+<h1 class="text-xl font-bold tracking-tighter text-emerald-900 dark:text-[#006c49]">Precision Monitor</h1>
+<p class="text-xs text-slate-500 font-medium">AI Voice Analytics</p>
+</div>
+<!-- Main Nav Links -->
+<nav class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 dark:text-[#3c4a42] hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-50/10 transition-colors duration-200 cursor-pointer active:scale-95 transform transition-transform">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 dark:text-[#3c4a42] hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-50/10 transition-colors duration-200 cursor-pointer active:scale-95 transform transition-transform">
+<span class="material-symbols-outlined" data-icon="mic_none">mic_none</span>
+<span>Call Feed</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-emerald-700 dark:text-[#006c49] font-semibold border-r-4 border-emerald-600 bg-emerald-50/30 dark:bg-emerald-50/5 cursor-pointer active:scale-95 transform transition-transform">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Agent Performance</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 dark:text-[#3c4a42] hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-50/10 transition-colors duration-200 cursor-pointer active:scale-95 transform transition-transform">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span>Reports</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 dark:text-[#3c4a42] hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-50/10 transition-colors duration-200 cursor-pointer active:scale-95 transform transition-transform">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</div>
+</nav>
+</div>
+<!-- Footer Nav -->
+<div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 dark:text-[#3c4a42] hover:text-emerald-600 hover:bg-emerald-50/50 dark:hover:bg-emerald-50/10 transition-colors duration-200 cursor-pointer active:scale-95 transform transition-transform">
+<img alt="Manager Profile" class="w-6 h-6 rounded-full border border-outline-variant/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJYc0LyU3F3y-wLQD72XWGhuHBbUj4lNF1wx_Oj37C8Znwa0FVmSrJIYHiAowQC92FqNvQqOTsGY0jOtQBPtKytcVpjFkuQP-E87UKUKkkdukpObp614wy4QRYDa7dHcq_ZDlOU7J9rx-l8KGq6hAWJ02sfzTBOE6SkOuYWt_LL5Qzd01CVRBi31IpNfprBIJ8JoHYJi9Bxg9Z0kYKxhCFEk079iC86Za0gTk0Xn5HfGqRCGY3nlNvKH5X8KjdVTb9BUPlY0Agzvk"/>
+<span>Manager Profile</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen bg-surface dark:bg-[#0f1113] relative overflow-y-auto h-screen no-scrollbar">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-white/80 dark:bg-[#ffffff]/80 backdrop-blur-xl flex justify-between items-center px-8 border-none">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-bold text-on-surface tracking-tight">Performance Intelligence</h2>
+</div>
+<div class="flex items-center gap-6">
+<!-- Search Bar -->
+<div class="relative flex items-center group">
+<span class="material-symbols-outlined absolute left-3 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-xl text-sm w-64 focus:ring-2 focus:ring-emerald-500/20 transition-all" placeholder="Search agents or metrics..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-px h-6 bg-outline-variant/20 mx-2"></div>
+<img alt="Manager Avatar" class="w-8 h-8 rounded-full bg-emerald-100 p-0.5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNOioELnOdCcmf2uO0wX3QzZdw5zjBM_P8vAsMqLObennwEWFua0UJkHBRzjE4kqLhfBcDue9b_05ybsNpf5AAge2g_NJzrU5arQgApNC09-_8SNR0J6LGdQendl9yZPT0iJ5IwnOMK-FC0meNb-F_kr5HJeqIvlxpISbv2IbhqBealq-jPp8V-BN2sMizHQK3u-cHN6z6FZ42MnuXsOPxqhJUl7oj4RTYcGUXcY8p1KiiEB0pmCeHnkTZjevhDm-F8v26jfdInUs"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="pt-24 px-8 pb-12">
+<!-- Headline Stats -->
+<section class="mb-10">
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-primary font-semibold tracking-widest text-xs uppercase">Workforce Overview</span>
+<h3 class="text-3xl font-extrabold text-on-surface tracking-tighter mt-1">Global Efficiency Targets</h3>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-lowest border-none rounded-xl text-xs font-bold text-on-surface-variant flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+                            Last 7 Days
+                        </button>
+<button class="px-4 py-2 bg-primary text-white border-none rounded-xl text-xs font-bold flex items-center gap-2 shadow-md">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                            Export Report
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Avg Handle Time</span>
+<span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] font-bold">-12%</span>
+</div>
+<div class="mt-4">
+<p class="text-4xl font-extrabold tracking-tighter">04:12</p>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-primary w-4/5"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Sentiment Score</span>
+<span class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] font-bold">+5.2%</span>
+</div>
+<div class="mt-4">
+<p class="text-4xl font-extrabold tracking-tighter">88%</p>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-secondary-container w-[88%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Resolution Rate</span>
+<span class="text-tertiary bg-error-container px-2 py-0.5 rounded-full text-[10px] font-bold">-0.8%</span>
+</div>
+<div class="mt-4">
+<p class="text-4xl font-extrabold tracking-tighter">94.2%</p>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-primary-container w-[94%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Active Agents</span>
+<span class="text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full text-[10px] font-bold">Live</span>
+</div>
+<div class="mt-4">
+<p class="text-4xl font-extrabold tracking-tighter">42/48</p>
+<div class="flex -space-x-2 mt-4">
+<img class="w-6 h-6 rounded-full border-2 border-white bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3ZYLBfpHoOyNndlSSDG9ThqYPYQfXsirOONT3Athe1-ZB-FzzClY_X_qCDXo6OmnwT_xqUDIHHWMxBF-zZAA70pUxVlQiu3Ja-GkfQDIk00kDxVxnAAky-IWlxC1568knkdYZqhUDrB3a8v-sui3gWrhr8BU_s_oAlQpGDV0vP88t6xBphv5O2lxxjMZhteS1JzC7LtMCHSAp8DguiJSqoXcm0UfhCwwbI4rwHGxaFdLtg2gcyc1ssbwiAWE6OMbsbF1sT3kjAv0"/>
+<img class="w-6 h-6 rounded-full border-2 border-white bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSyAjFIIfqCmN6dDwsoCyD3FX7-k76Cx9kGbjV09aEAqpI2Ks83MREaKBVXcGrSahUATgv6gPsYhPPChMz92W4PPf1ByATY_3n5pSbWAmk1fflKz3HssfVpgeEeQdMPH9blVpBy6pTdFX9DFOylhD97N_xC1rhXkqQIPo7twMo2dtY98F4lGDV1AUuXadi8tq0VWWa0UW8IQv1zTG2J6-rGDWCXrOU7636hmPEm6RPThsjQNtmRFjJV-0O1h4g43UijJ0wzCJgihc"/>
+<img class="w-6 h-6 rounded-full border-2 border-white bg-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2sXNe9UJFMG38ff70LZ6dkJgihsV4UkhhrYz8SWSPYgI2Go1kRaEz28O_ToVXF77Z3xdosbT7iTCxWLYgXRXlFePlZvnENtLZgpo8A1ed4qkq4IZpJnRzLO7gxIS40hZUydAvnSfDbY2VatG88DWZfLZ2fYiLcmtb2fTm1K16xjuIJZfGYPOJroEmVKvJTJukoCVzFRA9nTMd7CE7BJqo-S29PaTDixsP6bK7EOgW-z46otgfpBTUaRGRUKDXM8DrYRWjrsqhQtw"/>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-emerald-500 text-[10px] flex items-center justify-center text-white font-bold">+39</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Agent Bento Grid -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<h4 class="text-xl font-bold tracking-tight text-on-surface">Top Performers</h4>
+<button class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline">
+                        View All Agents
+                        <span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Agent Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] group hover:translate-y-[-4px] transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Close-up professional portrait of a young male customer service agent with a friendly smile, office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDySL9gumk9oEslpAfJ-Axio6jufR4mRXcLTQUH64CtqZrCViMAZB92uh7Bw-DzxeSFXrlVZOfdwFEVGL7GYGeEJ26yneg8e-bvNRbfIpEJHpFZTq0G16Jh3OUDHtbOCh8riD8UJK81Rq2a57SH7eOYhTY7QKCqHdLOlnOwnvjnpVRsjghabT-Y6AAi5c21ME4iwt6PEXjFauidOYsIRJIqAseVAfpxXQF8RboKBHPGvCO3_wAkDQoyH7W5MiPXwDI9hRL3CACENEY"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+</div>
+<div>
+<h5 class="text-lg font-bold text-on-surface">Julian Schmidt</h5>
+<p class="text-xs text-on-surface-variant font-medium">Senior Agent • Tier 1</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" data-icon="more_vert">more_vert</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Calls</p>
+<p class="text-xl font-extrabold text-on-surface">142</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">CSAT</p>
+<p class="text-xl font-extrabold text-primary">4.9</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Efficiency Trend</span>
+<span class="text-emerald-600 font-bold">+18%</span>
+</div>
+<!-- Mock Sparkline -->
+<div class="h-10 w-full flex items-end gap-1">
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[40%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[60%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[45%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[75%]"></div>
+<div class="bg-emerald-200 dark:bg-emerald-900/30 flex-1 rounded-t-sm h-[65%]"></div>
+<div class="bg-emerald-300 dark:bg-emerald-900/40 flex-1 rounded-t-sm h-[90%]"></div>
+<div class="bg-emerald-500 flex-1 rounded-t-sm h-[100%]"></div>
+</div>
+</div>
+</div>
+<!-- Agent Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_20px_0_rgba(25,28,30,0.04)] group hover:translate-y-[-4px] transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover" data-alt="Professional profile photo of a woman with glasses, smiling warmly, minimalist corporate background, soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOb1VOuiYMcEs0K-0mXF-pIzk2R4uqrqzSqtijLqFnc2DzH28k464QSu7UbD5sVk8OtQB8aH1aNhV_PhgDFnSoMa13ZaYcGkbWw-4f7TOFH052te6-h3Oq515lT2gd7blLXCCGcwQyLTl8BZab3ChNXIqdfS_B2xUQww2GtL3A9-zxBIHV4GBevhvSfsoYsvavC7boqcZo-EVPNBXlpbrHOb0xri3IbbfQ2XMjKmMqHmIVtQF6efIEKnzzrME3mggWJ9u2b2hccVc"/>
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+</div>
+<div>
+<h5 class="text-lg font-bold text-on-surface">Maya Lin</h5>
+<p class="text-xs text-on-surface-variant font-medium">Specialist • Fintech</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" data-icon="more_vert">more_vert</span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Calls</p>
+<p class="text-xl font-extrabold text-on-surface">128</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">CSAT</p>
+<p class="text-xl font-extrabold text-primary">4.8</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant">Efficiency Trend</span>
+<span class="text-emerald-600 font-bold">+12%</span>
+</div>
+<!-- Mock Sparkline -->
+<div class="h-10 w-full flex items-end gap-1">
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[30%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[50%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[85%]"></div>
+<div class="bg-emerald-100 dark:bg-emerald-900/20 flex-1 rounded-t-sm h-[65%]"></div>
+<div class="bg-emerald-200 dark:bg-emerald-900/30 flex-1 rounded-t-sm h-[75%]"></div>
+<div class="bg-emerald-300 dark:bg-emerald-900/40 flex-1 rounded-t-sm h-[80%]"></div>
+<div class="bg-emerald-500 flex-1 rounded-t-sm h-[85%]"></div>
+</div>
+</div>
+</div>
+<!-- Agent Card 3 (Asymmetric Spotlight) -->
+<div class="bg-gradient-to-br from-emerald-900 to-emerald-700 rounded-xl p-6 shadow-xl relative overflow-hidden group">
+<div class="relative z-10 text-white">
+<div class="flex items-center gap-4 mb-8">
+<img class="w-14 h-14 rounded-full object-cover border-2 border-emerald-400" data-alt="Portrait of a male executive in a sleek modern office, sophisticated lighting, professional attire, warm cinematic feel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7072laxtXoJghxffUYWFPeclx7JtOBcnFGchkYrk1msVpRw00MO1czQeVfiKT1tiZRbnE36rxYw3uQSANeyB7Xm0NZFhOoO-wWClViorBIXp3Ifd0bjiNydsslqLF-4nGm6bUfv9WouQn-7W6Vzb1RFewWHLYnIrp-2WzFzopBnc4q6CaJJH9sJ3fM6iycm2QkjJ7OMQDkl_ahqh4tXcr3oQzQ8syIqx9-Dz5LueVCAyXzd5ZHiXQZPy1noGilThJvnwRMb87FYY"/>
+<div>
+<h5 class="text-lg font-bold">Derrick Wells</h5>
+<p class="text-xs text-emerald-100 opacity-80">Lead Strategist</p>
+</div>
+</div>
+<div class="mb-4">
+<p class="text-[10px] uppercase tracking-widest text-emerald-200 font-bold mb-1">Weekly Target Reach</p>
+<p class="text-5xl font-extrabold tracking-tighter">114%</p>
+</div>
+<button class="w-full py-3 bg-white text-emerald-900 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-50 transition-colors">
+                                View Full Analytics
+                            </button>
+</div>
+<!-- Abstract Background Decoration -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Detailed Comparison Table -->
+<section>
+<div class="bg-surface-container-lowest rounded-2xl shadow-[0_4px_24px_0_rgba(25,28,30,0.06)] overflow-hidden">
+<div class="p-8 flex justify-between items-center border-b border-outline-variant/10">
+<div>
+<h4 class="text-xl font-bold tracking-tight text-on-surface">Agent Metrics Matrix</h4>
+<p class="text-sm text-on-surface-variant">Granular comparison of call-by-call performance data</p>
+</div>
+<div class="flex gap-4">
+<div class="flex p-1 bg-surface-container-low rounded-xl">
+<button class="px-4 py-2 bg-white rounded-lg text-xs font-bold text-primary shadow-sm">Real-time</button>
+<button class="px-4 py-2 rounded-lg text-xs font-bold text-slate-500">Historical</button>
+</div>
+<button class="w-10 h-10 border border-outline-variant/30 flex items-center justify-center rounded-xl text-on-surface-variant">
+<span class="material-symbols-outlined text-xl" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Agent Details</th>
+<th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">AHT (Min)</th>
+<th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Silence %</th>
+<th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Crosstalk %</th>
+<th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Adherence</th>
+<th class="px-6 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+<th class="px-8 py-5 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHWazC0UCTyCccvTMmEIAXPIaWmh7Ctjzdn2IcLrEyz5XoWK3IayKuyu1W96ffqhVXM9THwGG0B5HOibo7PrH9kEztUQroNslRwOaLdLTaSC2MpAbaLD580TLDVvaX4PFfvjMRCnQnQ5Mz6QN62FWo5eh0Z60PMsMrCd3jZfwJuCkuzBLcwQwhRqFkFABRDhzaFHfkdiBNPpGyinL0Ny5xMMAdjfp_USyDybhLsgnhqPd9-5C-26QGRnxYVF4-z-4Tj477oq1lyec"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Julian Schmidt</p>
+<p class="text-[10px] text-on-surface-variant font-medium tracking-tight">ID: #44021</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 font-medium text-sm">03:45</td>
+<td class="px-6 py-6 font-medium text-sm">8.2%</td>
+<td class="px-6 py-6 font-medium text-sm text-tertiary">4.1%</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 w-[92%]"></div>
+</div>
+<span class="text-xs font-bold">92%</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                                            Online
+                                        </span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary text-xs font-bold hover:underline">Drill-down</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3VHrhwDMe4n2gjm-ZfMOngsWzb-ZADWMkNiEZScpyy6W5Q3Yo1SIB9LIzSYjQwwLE12kbGvxxnA72ddBvQLClkbc5DKoAh_U5b5_wb4lsjBi5cPXsmwCgiuvHAncph0uZ3CNpGAU5CwILjr9Cd6tTY3kXePcEovqJh0G3yXfPHJpyQAauA4ktWDERmO6MHne4D9SO93K5UuOOOa_M3oHqgVIIzyhDYxF1QFa8tYIsHHB88RISpRd7XxU00aVQ-6NlS--_pIXlzYc"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Maya Lin</p>
+<p class="text-[10px] text-on-surface-variant font-medium tracking-tight">ID: #44029</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 font-medium text-sm">04:12</td>
+<td class="px-6 py-6 font-medium text-sm">12.5%</td>
+<td class="px-6 py-6 font-medium text-sm">1.8%</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 w-[98%]"></div>
+</div>
+<span class="text-xs font-bold">98%</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                                            In Call
+                                        </span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary text-xs font-bold hover:underline">Drill-down</button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-3">
+<img class="w-8 h-8 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDX6ow5BRGB0HP-oEV_VHULGhekPNDRqavzKyXpQ2eiZft_SxyrgxTKpEfoXOqRuYbPzHfWnxx8QymfQjY3OzY6JO1h8XzMuFLnQGnBlDWOKdYt7GWWbqJO0w8v_orWvor8oDW6ut75UQS92lfb_nn-GkvVkKwhgzDTq9mk-NWQG8-_rH9N7T2wiFJWvZAvvtQAxR6zWHWO5SvD3tYf-x_HJQjVMZWFsiWpYWumFWPDAL216ZExNovZu9J3Mwb8pPskYfE6clNUSo4"/>
+<div>
+<p class="text-sm font-bold text-on-surface">Derrick Wells</p>
+<p class="text-[10px] text-on-surface-variant font-medium tracking-tight">ID: #44033</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-6 font-medium text-sm">05:20</td>
+<td class="px-6 py-6 font-medium text-sm text-tertiary">15.2%</td>
+<td class="px-6 py-6 font-medium text-sm">2.4%</td>
+<td class="px-6 py-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[76%]"></div>
+</div>
+<span class="text-xs font-bold">76%</span>
+</div>
+</td>
+<td class="px-6 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">
+                                            Offline
+                                        </span>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary text-xs font-bold hover:underline">Drill-down</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Contextual FAB Suppression: FAB not shown on performance detail screen per rules -->
+</body></html>

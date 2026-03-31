@@ -1,0 +1,34 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+
+# Generated code
+*.g.dart
+*.freezed.dart
+
+# Dependencies
+node_modules/
+
+# Platform
+.DS_Store
+
+# Secrets — NEVER commit these
+google-services.json
+firebase-config.js
+service_account.json
+.env
+*.jks
+*.keystore
+
+# Skills (reference only, not part of project)
+Skill/
+
+# Claude
+.claude/
+.mcp.json

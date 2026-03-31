@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Calls: authenticated users can read/write their own calls
+    match /calls/{callId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.executiveId == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.executiveId == request.auth.uid;
+    }
+
+    // KPI snapshots: authenticated users can read all, write their own
+    match /kpi_daily/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+
+    // Executives: authenticated users can read all, admin can write
+    match /executives/{execId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+  }
+}

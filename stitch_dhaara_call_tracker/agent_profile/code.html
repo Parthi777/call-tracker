@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sonic Architect - Profile &amp; Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#283044",
+              "on-primary-container": "#00422b",
+              "on-secondary-fixed": "#2a1700",
+              "on-tertiary-container": "#79000e",
+              "surface-container-lowest": "#060e20",
+              "inverse-primary": "#006c49",
+              "outline-variant": "#3c4a42",
+              "on-surface-variant": "#bbcabf",
+              "secondary-fixed-dim": "#ffb95f",
+              "secondary": "#ffb95f",
+              "on-tertiary": "#68000a",
+              "on-primary-fixed": "#002113",
+              "tertiary": "#ffb3ad",
+              "on-primary": "#003824",
+              "surface-variant": "#2d3449",
+              "on-background": "#dae2fd",
+              "error-container": "#93000a",
+              "surface-container-high": "#222a3d",
+              "surface": "#0b1326",
+              "surface-bright": "#31394d",
+              "on-error": "#690005",
+              "on-surface": "#dae2fd",
+              "tertiary-fixed": "#ffdad7",
+              "tertiary-container": "#ff7a73",
+              "background": "#0b1326",
+              "on-primary-fixed-variant": "#005236",
+              "outline": "#86948a",
+              "secondary-container": "#ee9800",
+              "surface-container-highest": "#2d3449",
+              "surface-container-low": "#131b2e",
+              "error": "#ffb4ab",
+              "tertiary-fixed-dim": "#ffb3ad",
+              "on-tertiary-fixed": "#410004",
+              "primary-fixed": "#6ffbbe",
+              "surface-tint": "#4edea3",
+              "on-secondary-fixed-variant": "#653e00",
+              "on-secondary-container": "#5b3800",
+              "primary-container": "#10b981",
+              "surface-dim": "#0b1326",
+              "surface-container": "#171f33",
+              "secondary-fixed": "#ffddb8",
+              "on-tertiary-fixed-variant": "#930013",
+              "primary": "#4edea3",
+              "inverse-surface": "#dae2fd",
+              "on-secondary": "#472a00",
+              "on-error-container": "#ffdad6",
+              "primary-fixed-dim": "#4edea3"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+            background: rgba(19, 27, 46, 0.8);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 h-16 bg-slate-100 dark:bg-[#131b2e] no-line tonal-shift">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-primary/20">
+<img alt="Agent Profile Picture" class="w-full h-full object-cover" data-alt="close-up studio portrait of a professional male architect with a clean look and neutral background, sharp focus, cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCheZfOh7u0bJQ5tkOqjshl32bbrULJ1QYg938hyqW58TETBUUrM7gMzRetVTO_32VUBA1coLOMCw9gnVcHv6VVW-aSecUTZPhPByL2IidpK0EGQbCIoJi-u4v1PFHW7iMejrB1N0KjnKy8Ms_c88MTlV9WG6caiw17lwyTTTf4Wd82UdBGVKcskDWbwgYv4Dgqc2Y0LgY6AaqajwyTShwmQJGVOik4vkdFfOBw5FJ-IrQItBFBGdjFaiN5VZaYaTRz2VQhYytLk2M"/>
+</div>
+<h1 class="text-emerald-700 dark:text-[#10B981] font-black tracking-tighter text-xl uppercase">Sonic Architect</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-[#222a3d] transition-colors scale-95 active:opacity-80 transition-all">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">settings</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-8">
+<!-- Profile Hero Section -->
+<section class="relative flex flex-col items-center text-center">
+<div class="relative mb-6">
+<div class="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-primary-container to-primary shadow-2xl">
+<div class="w-full h-full rounded-full overflow-hidden border-4 border-surface">
+<img alt="Large Profile Photo" class="w-full h-full object-cover" data-alt="A high-end editorial portrait of a professional technologist, soft blue and emerald rim lighting, dark studio background, sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_4L7gb80gTcfG4Woa-RYbatgPAnvlmvHLlRTkvFBMaK1I1GhKU_06T8xKRcwE6hCHs65lcvGb2wGXB9EUwuMAsL_UnYVIGsypdQwqlWPdSjMZCFHTzjbMIt_8jFBJRjcAKtQ56tHYv_SSrwczgylc4MZfRgaMqyP9BQx81K6XkNNfmhYdlHAsAy5r7nwkHHCLqU7hgqHNid2QIoADHvdz6EhLMZvO8a2t4lHDybQIwHxjAK_-54HMFiMprmTbjfYbQBPmw9yVgyw"/>
+</div>
+</div>
+<div class="absolute bottom-1 right-1 bg-primary text-on-primary w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-surface">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">edit</span>
+</div>
+</div>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Alex Chen</h2>
+<p class="text-on-surface-variant font-label text-xs uppercase tracking-[0.2em] mt-1">Senior Acoustic Lead • ID: SA-99210</p>
+</section>
+<!-- Bento Settings Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Notification Toggle Card -->
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between min-h-[140px] transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-primary-container/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div>
+<h3 class="text-on-surface font-semibold text-lg">Push Alerts</h3>
+<p class="text-on-surface-variant text-sm">Real-time anomaly detection</p>
+</div>
+</div>
+<!-- Auto-Delete Toggle Card -->
+<div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between min-h-[140px] transition-all hover:bg-surface-container-high">
+<div class="flex justify-between items-start">
+<div class="p-2 bg-secondary-container/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined">auto_delete</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div>
+<h3 class="text-on-surface font-semibold text-lg">Auto-Archive</h3>
+<p class="text-on-surface-variant text-sm">Clear logs every 30 days</p>
+</div>
+</div>
+</div>
+<!-- Action Section -->
+<div class="space-y-3 pt-4">
+<button class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl group hover:bg-surface-container-high transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div class="text-left">
+<span class="block text-on-surface font-medium">Contact IT Support</span>
+<span class="block text-on-surface-variant text-xs">Priority queue: 2 min wait</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-5 bg-surface-container-low rounded-xl group hover:bg-error/10 transition-all active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant group-hover:text-error transition-colors">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<div class="text-left">
+<span class="block text-on-surface font-medium group-hover:text-error">Sign Out</span>
+<span class="block text-on-surface-variant text-xs">Current session: 4h 12m</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+</div>
+<!-- App Metadata -->
+<div class="text-center pt-8 pb-12">
+<p class="text-on-surface-variant font-label text-[10px] tracking-widest uppercase opacity-40">Sonic Architect OS v4.2.0-stable</p>
+<p class="text-on-surface-variant font-label text-[10px] tracking-widest uppercase opacity-40 mt-1">Encrypted by NeuralCore™</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 bg-white/80 dark:bg-[#131b2e]/80 backdrop-blur-xl rounded-t-2xl shadow-[0_-4px_24px_rgba(6,14,32,0.1)] border-t border-emerald-500/10">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined">settings_remote</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest mt-1">My Calls</span>
+</a>
+<!-- ACTIVE TAB: Profile -->
+<a class="flex flex-col items-center justify-center bg-emerald-100 dark:bg-[#10B981]/20 text-emerald-800 dark:text-[#4edea3] rounded-xl px-4 py-1.5 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest mt-1">Profile</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1.5 hover:text-emerald-500 dark:hover:text-[#4edea3] transition-all" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-widest mt-1">Help</span>
+</a>
+</nav>
+</body></html>
