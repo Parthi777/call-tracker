@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:math';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -41,7 +43,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         range = DateTimeRange(
             start: today.subtract(const Duration(days: 29)), end: today);
       case 'Custom':
-        return; // Don't override custom range
+        return;
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -103,6 +105,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   Widget build(BuildContext context) {
     final kpi = ref.watch(filteredKpiProvider);
     final calls = ref.watch(filteredCallsProvider);
+    final execKpis = ref.watch(perExecutiveKpiProvider);
 
     return Column(
       children: [
@@ -147,7 +150,6 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
                     ),
                     Row(
                       children: [
-                        // Period selector
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
@@ -205,6 +207,36 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
 
                 // KPI Summary row
                 _buildKpiRow(kpi),
+                const SizedBox(height: 32),
+
+                // Charts row
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 900) {
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: _DailyTrendChart(calls: calls),
+                          ),
+                          const SizedBox(width: 32),
+                          Expanded(
+                            child: _ExecutiveComparisonChart(
+                                execKpis: execKpis),
+                          ),
+                        ],
+                      );
+                    }
+                    return Column(
+                      children: [
+                        _DailyTrendChart(calls: calls),
+                        const SizedBox(height: 32),
+                        _ExecutiveComparisonChart(execKpis: execKpis),
+                      ],
+                    );
+                  },
+                ),
                 const SizedBox(height: 32),
 
                 // Call log table
@@ -282,6 +314,423 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Daily call trend line chart.
+class _DailyTrendChart extends StatelessWidget {
+  final List<Map<String, dynamic>> calls;
+
+  const _DailyTrendChart({required this.calls});
+
+  @override
+  Widget build(BuildContext context) {
+    // Group calls by date
+    final Map<String, _DayStats> byDate = {};
+    for (final c in calls) {
+      final ts = c['timestamp'];
+      if (ts is! Timestamp) continue;
+      final dt = ts.toDate();
+      final key = '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
+      byDate.putIfAbsent(key, () => _DayStats());
+      byDate[key]!.total++;
+      if (c['direction'] == 'incoming') {
+        byDate[key]!.incoming++;
+      } else {
+        byDate[key]!.outgoing++;
+      }
+    }
+
+    final sortedDates = byDate.keys.toList()..sort();
+    final displayDates = sortedDates.length > 30
+        ? sortedDates.sublist(sortedDates.length - 30)
+        : sortedDates;
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.onSurface.withValues(alpha: 0.06),
+            blurRadius: 24,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Daily Call Trends',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Incoming vs Outgoing calls over time',
+            style: GoogleFonts.inter(
+                fontSize: 12, color: AppColors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 8),
+          // Legend
+          Row(
+            children: [
+              _LegendDot(color: AppColors.primary, label: 'Incoming'),
+              const SizedBox(width: 16),
+              _LegendDot(color: AppColors.secondary, label: 'Outgoing'),
+              const SizedBox(width: 16),
+              _LegendDot(
+                  color: AppColors.onSurfaceVariant, label: 'Total'),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: 220,
+            child: displayDates.isEmpty
+                ? Center(
+                    child: Text(
+                      'No data for selected period',
+                      style: GoogleFonts.inter(
+                          fontSize: 14, color: AppColors.outline),
+                    ),
+                  )
+                : LineChart(
+                    LineChartData(
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: _calcInterval(displayDates, byDate),
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: AppColors.surfaceContainer,
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 40,
+                            getTitlesWidget: (value, meta) => Text(
+                              '${value.toInt()}',
+                              style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: AppColors.onSurfaceVariant),
+                            ),
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            interval: max(1, displayDates.length / 6)
+                                .roundToDouble(),
+                            getTitlesWidget: (value, meta) {
+                              final idx = value.toInt();
+                              if (idx < 0 || idx >= displayDates.length) {
+                                return const SizedBox.shrink();
+                              }
+                              final parts = displayDates[idx].split('-');
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  '${parts[1]}/${parts[2]}',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 9,
+                                      color: AppColors.onSurfaceVariant),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      lineBarsData: [
+                        // Total
+                        _buildLine(
+                          displayDates,
+                          byDate,
+                          (s) => s.total.toDouble(),
+                          AppColors.onSurfaceVariant.withValues(alpha: 0.3),
+                          isDashed: true,
+                        ),
+                        // Incoming
+                        _buildLine(
+                          displayDates,
+                          byDate,
+                          (s) => s.incoming.toDouble(),
+                          AppColors.primary,
+                        ),
+                        // Outgoing
+                        _buildLine(
+                          displayDates,
+                          byDate,
+                          (s) => s.outgoing.toDouble(),
+                          AppColors.secondary,
+                        ),
+                      ],
+                      lineTouchData: LineTouchData(
+                        touchTooltipData: LineTouchTooltipData(
+                          getTooltipItems: (spots) => spots.map((spot) {
+                            return LineTooltipItem(
+                              '${spot.y.toInt()}',
+                              GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: spot.bar.color ?? Colors.white,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  double _calcInterval(
+      List<String> dates, Map<String, _DayStats> byDate) {
+    if (dates.isEmpty) return 1;
+    final maxVal = dates
+        .map((d) => byDate[d]?.total ?? 0)
+        .reduce((a, b) => a > b ? a : b);
+    if (maxVal <= 5) return 1;
+    return (maxVal / 4).ceilToDouble();
+  }
+
+  LineChartBarData _buildLine(
+    List<String> dates,
+    Map<String, _DayStats> byDate,
+    double Function(_DayStats) getValue,
+    Color color, {
+    bool isDashed = false,
+  }) {
+    return LineChartBarData(
+      spots: List.generate(dates.length, (i) {
+        final stats = byDate[dates[i]]!;
+        return FlSpot(i.toDouble(), getValue(stats));
+      }),
+      isCurved: true,
+      curveSmoothness: 0.3,
+      color: color,
+      barWidth: isDashed ? 1.5 : 2.5,
+      dashArray: isDashed ? [6, 4] : null,
+      dotData: const FlDotData(show: false),
+      belowBarData: isDashed
+          ? BarAreaData(show: false)
+          : BarAreaData(
+              show: true,
+              color: color.withValues(alpha: 0.08),
+            ),
+    );
+  }
+}
+
+class _DayStats {
+  int total = 0;
+  int incoming = 0;
+  int outgoing = 0;
+}
+
+/// Executive comparison horizontal bar chart.
+class _ExecutiveComparisonChart extends StatelessWidget {
+  final List<Map<String, dynamic>> execKpis;
+
+  const _ExecutiveComparisonChart({required this.execKpis});
+
+  @override
+  Widget build(BuildContext context) {
+    final displayExecs = execKpis.take(8).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.onSurface.withValues(alpha: 0.06),
+            blurRadius: 24,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Executive Comparison',
+            style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Calls by executive',
+            style: GoogleFonts.inter(
+                fontSize: 12, color: AppColors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            height: max(220, displayExecs.length * 44.0),
+            child: displayExecs.isEmpty
+                ? Center(
+                    child: Text(
+                      'No executive data',
+                      style: GoogleFonts.inter(
+                          fontSize: 14, color: AppColors.outline),
+                    ),
+                  )
+                : BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      maxY: displayExecs.isEmpty
+                          ? 10
+                          : (displayExecs.first['totalCalls'] as int)
+                                  .toDouble() *
+                              1.2,
+                      barGroups: List.generate(displayExecs.length, (i) {
+                        final exec = displayExecs[i];
+                        final incoming =
+                            (exec['incoming'] as int? ?? 0).toDouble();
+                        final outgoing =
+                            (exec['outgoing'] as int? ?? 0).toDouble();
+                        return BarChartGroupData(
+                          x: i,
+                          barsSpace: 2,
+                          barRods: [
+                            BarChartRodData(
+                              toY: incoming,
+                              width: 10,
+                              color: AppColors.primary,
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(3)),
+                            ),
+                            BarChartRodData(
+                              toY: outgoing,
+                              width: 10,
+                              color: AppColors.secondary,
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(3)),
+                            ),
+                          ],
+                        );
+                      }),
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: AppColors.surfaceContainer,
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 36,
+                            getTitlesWidget: (value, _) => Text(
+                              '${value.toInt()}',
+                              style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: AppColors.onSurfaceVariant),
+                            ),
+                          ),
+                        ),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, _) {
+                              final idx = value.toInt();
+                              if (idx < 0 || idx >= displayExecs.length) {
+                                return const SizedBox.shrink();
+                              }
+                              final name =
+                                  displayExecs[idx]['name'] as String? ?? '';
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Text(
+                                  name.split(' ').first,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 9,
+                                      color: AppColors.onSurfaceVariant),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barTouchData: BarTouchData(
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            final exec = displayExecs[group.x];
+                            return BarTooltipItem(
+                              '${exec['name']}\n${exec['totalCalls']} calls',
+                              GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _LegendDot(color: AppColors.primary, label: 'Incoming'),
+              const SizedBox(width: 16),
+              _LegendDot(color: AppColors.secondary, label: 'Outgoing'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendDot({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style:
+              GoogleFonts.inter(fontSize: 11, color: AppColors.onSurfaceVariant),
+        ),
+      ],
     );
   }
 }

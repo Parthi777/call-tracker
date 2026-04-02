@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salestrack_web/core/firestore_providers.dart';
 import 'package:salestrack_web/core/theme.dart';
+import 'package:salestrack_web/shared/shimmer_loading.dart';
 import 'package:salestrack_web/shared/top_nav_bar.dart';
 
 class CallFeedScreen extends ConsumerStatefulWidget {
@@ -45,8 +46,11 @@ class _CallFeedScreenState extends ConsumerState<CallFeedScreen> {
         ),
         Expanded(
           child: callsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('Error: $e')),
+            loading: () => const DashboardSkeleton(),
+            error: (e, _) => ErrorStateWidget(
+              message: '$e',
+              onRetry: () => ref.invalidate(callsStreamProvider),
+            ),
             data: (calls) {
               final filtered = _applyFilter(calls);
               return SingleChildScrollView(
