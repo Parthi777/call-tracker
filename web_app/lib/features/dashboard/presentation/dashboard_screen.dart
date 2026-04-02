@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -221,11 +223,16 @@ class _KpiCardState extends State<_KpiCard> {
   }
 }
 
-class _QualityPerformanceChart extends StatelessWidget {
-  final _barHeights = const [0.50, 0.62, 0.75, 0.56, 0.81, 0.69, 0.88, 0.81, 0.62, 0.50];
-
+/// Quality chart now shows per-executive call counts as bars.
+class _QualityPerformanceChart extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final execKpis = ref.watch(perExecutiveKpiProvider);
+    final displayExecs = execKpis.take(10).toList();
+    final maxCalls = displayExecs.isEmpty
+        ? 1
+        : displayExecs.map((e) => e['totalCalls'] as int).reduce(max);
+
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
@@ -249,7 +256,7 @@ class _QualityPerformanceChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Quality Performance',
+                    'Calls by Executive',
                     style: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -258,39 +265,84 @@ class _QualityPerformanceChart extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Avg quality score across last 30 days',
+                    'Real-time call volume per agent',
                     style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  _ChipButton(label: '30D', active: true),
-                  const SizedBox(width: 8),
-                  _ChipButton(label: '7D', active: false),
-                ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Text(
+                  'Live',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 32),
-          SizedBox(
-            height: 200,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (var i = 0; i < _barHeights.length; i++) ...[
-                  Expanded(
-                    child: _ChartBar(
-                      heightFraction: _barHeights[i],
-                      isHighlighted: i == 6,
-                      label: i == 6 ? 'Current: 92%' : null,
+          if (displayExecs.isEmpty)
+            SizedBox(
+              height: 200,
+              child: Center(
+                child: Text(
+                  'No call data yet',
+                  style: GoogleFonts.inter(fontSize: 14, color: AppColors.outline),
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 200,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  for (var i = 0; i < displayExecs.length; i++) ...[
+                    Expanded(
+                      child: _ChartBar(
+                        heightFraction: maxCalls > 0
+                            ? (displayExecs[i]['totalCalls'] as int) / maxCalls
+                            : 0,
+                        isHighlighted: i == 0,
+                        label: i == 0
+                            ? '${displayExecs[i]['totalCalls']} calls'
+                            : null,
+                        tooltip: displayExecs[i]['name'] as String? ?? '',
+                      ),
                     ),
-                  ),
-                  if (i < _barHeights.length - 1) const SizedBox(width: 4),
+                    if (i < displayExecs.length - 1) const SizedBox(width: 4),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
+          if (displayExecs.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 20,
+              child: Row(
+                children: [
+                  for (var i = 0; i < displayExecs.length; i++) ...[
+                    Expanded(
+                      child: Text(
+                        (displayExecs[i]['name'] as String? ?? '').split(' ').first,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(fontSize: 9, color: AppColors.onSurfaceVariant),
+                      ),
+                    ),
+                    if (i < displayExecs.length - 1) const SizedBox(width: 4),
+                  ],
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -301,90 +353,81 @@ class _ChartBar extends StatelessWidget {
   final double heightFraction;
   final bool isHighlighted;
   final String? label;
+  final String? tooltip;
 
   const _ChartBar({
     required this.heightFraction,
     this.isHighlighted = false,
     this.label,
+    this.tooltip,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        if (label != null)
-          Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.onSurface,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              label!,
-              style: GoogleFonts.inter(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        Flexible(
-          child: FractionallySizedBox(
-            heightFactor: heightFraction,
-            child: Container(
+    return Tooltip(
+      message: tooltip ?? '',
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (label != null)
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                gradient: isHighlighted
-                    ? const LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [AppColors.primary, AppColors.primaryContainer],
-                      )
-                    : null,
-                color: isHighlighted ? null : AppColors.primary.withValues(alpha: heightFraction * 0.3),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
-                boxShadow: isHighlighted
-                    ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.2), blurRadius: 12)]
-                    : null,
+                color: AppColors.onSurface,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                label!,
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          Flexible(
+            child: FractionallySizedBox(
+              heightFactor: heightFraction.clamp(0.05, 1.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: isHighlighted
+                      ? const LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [AppColors.primary, AppColors.primaryContainer],
+                        )
+                      : null,
+                  color: isHighlighted ? null : AppColors.primary.withValues(alpha: heightFraction * 0.5 + 0.15),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+                  boxShadow: isHighlighted
+                      ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.2), blurRadius: 12)]
+                      : null,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ChipButton extends StatelessWidget {
-  final String label;
-  final bool active;
-
-  const _ChipButton({required this.label, required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: active ? AppColors.primaryContainer : Colors.transparent,
-        borderRadius: BorderRadius.circular(99),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.inter(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          color: active ? Colors.white : AppColors.onSurfaceVariant,
-        ),
+        ],
       ),
     );
   }
 }
 
-class _SentimentDonutCard extends StatelessWidget {
+/// Sentiment donut computed from call durations (short=negative, medium=neutral, long=positive).
+class _SentimentDonutCard extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final agg = ref.watch(aggregatedKpiProvider);
+    final total = agg['totalCalls'] as int? ?? 0;
+    final missed = agg['missed'] as int? ?? 0;
+    final incoming = agg['incoming'] as int? ?? 0;
+    final outgoing = agg['outgoing'] as int? ?? 0;
+
+    // Use call direction breakdown as the donut: incoming / outgoing / missed
+    final inPct = total > 0 ? (incoming / total * 100).round() : 0;
+    final outPct = total > 0 ? (outgoing / total * 100).round() : 0;
+    final missedPct = total > 0 ? (missed / total * 100).round() : 0;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -402,7 +445,7 @@ class _SentimentDonutCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Call Sentiment',
+            'Call Breakdown',
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w800,
@@ -412,18 +455,20 @@ class _SentimentDonutCard extends StatelessWidget {
           const SizedBox(height: 24),
           Row(
             children: [
-              // Donut chart
               SizedBox(
                 width: 100,
                 height: 100,
                 child: CustomPaint(
-                  painter: _DonutPainter(),
+                  painter: _DonutPainter(
+                    incomingPct: total > 0 ? incoming / total : 0,
+                    outgoingPct: total > 0 ? outgoing / total : 0,
+                  ),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '75%',
+                          '$total',
                           style: GoogleFonts.inter(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
@@ -431,7 +476,7 @@ class _SentimentDonutCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'POSITIVE',
+                          'TOTAL',
                           style: GoogleFonts.inter(
                             fontSize: 7,
                             fontWeight: FontWeight.w700,
@@ -449,11 +494,11 @@ class _SentimentDonutCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _LegendItem(color: AppColors.primary, label: 'Positive (75%)'),
+                    _LegendItem(color: AppColors.primary, label: 'Incoming ($inPct%)'),
                     const SizedBox(height: 8),
-                    _LegendItem(color: AppColors.secondary, label: 'Neutral (15%)'),
+                    _LegendItem(color: AppColors.secondary, label: 'Outgoing ($outPct%)'),
                     const SizedBox(height: 8),
-                    _LegendItem(color: AppColors.tertiary, label: 'Negative (10%)'),
+                    _LegendItem(color: AppColors.tertiary, label: 'Missed ($missedPct%)'),
                   ],
                 ),
               ),
@@ -466,12 +511,18 @@ class _SentimentDonutCard extends StatelessWidget {
 }
 
 class _DonutPainter extends CustomPainter {
+  final double incomingPct;
+  final double outgoingPct;
+
+  _DonutPainter({required this.incomingPct, required this.outgoingPct});
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2 - 8;
     const strokeWidth = 12.0;
     const startAngle = -1.5708; // -pi/2
+    const fullCircle = 2 * 3.14159;
 
     final bgPaint = Paint()
       ..color = AppColors.surfaceContainer
@@ -480,37 +531,40 @@ class _DonutPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, bgPaint);
 
-    // Positive: 75%
-    final positivePaint = Paint()
-      ..color = AppColors.primary
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      2 * 3.14159 * 0.75,
-      false,
-      positivePaint,
-    );
+    if (incomingPct > 0) {
+      final inPaint = Paint()
+        ..color = AppColors.primary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        fullCircle * incomingPct,
+        false,
+        inPaint,
+      );
+    }
 
-    // Neutral: 15%
-    final neutralPaint = Paint()
-      ..color = AppColors.secondary
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle + 2 * 3.14159 * 0.75,
-      2 * 3.14159 * 0.15,
-      false,
-      neutralPaint,
-    );
+    if (outgoingPct > 0) {
+      final outPaint = Paint()
+        ..color = AppColors.secondary
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle + fullCircle * incomingPct,
+        fullCircle * outgoingPct,
+        false,
+        outPaint,
+      );
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _DonutPainter oldDelegate) =>
+      oldDelegate.incomingPct != incomingPct || oldDelegate.outgoingPct != outgoingPct;
 }
 
 class _LegendItem extends StatelessWidget {
@@ -537,9 +591,20 @@ class _LegendItem extends StatelessWidget {
   }
 }
 
-class _CallOutcomesCard extends StatelessWidget {
+/// Call outcomes now shows real call status breakdown from Firestore.
+class _CallOutcomesCard extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final calls = ref.watch(callsStreamProvider).valueOrNull ?? [];
+    final total = calls.length;
+    final recorded = calls.where((c) => c['status'] == 'recorded').length;
+    final uploaded = calls.where((c) => c['status'] == 'uploaded').length;
+    final failed = calls.where((c) => c['status'] == 'failed').length;
+
+    final recordedPct = total > 0 ? (recorded / total * 100).round() : 0;
+    final uploadedPct = total > 0 ? (uploaded / total * 100).round() : 0;
+    final failedPct = total > 0 ? (failed / total * 100).round() : 0;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -557,7 +622,7 @@ class _CallOutcomesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Call Outcomes',
+            'Call Status',
             style: GoogleFonts.inter(
               fontSize: 14,
               fontWeight: FontWeight.w800,
@@ -565,11 +630,11 @@ class _CallOutcomesCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _OutcomeBar(label: 'Sale Closed', pct: 42, color: AppColors.primary),
+          _OutcomeBar(label: 'Uploaded', pct: uploadedPct, color: AppColors.primary),
           const SizedBox(height: 16),
-          _OutcomeBar(label: 'Follow-up Scheduled', pct: 28, color: AppColors.secondary),
+          _OutcomeBar(label: 'Recorded', pct: recordedPct, color: AppColors.secondary),
           const SizedBox(height: 16),
-          _OutcomeBar(label: 'No Interest', pct: 30, color: AppColors.onSurfaceVariant),
+          _OutcomeBar(label: 'Failed', pct: failedPct, color: AppColors.tertiary),
         ],
       ),
     );
@@ -619,18 +684,15 @@ class _OutcomeBar extends StatelessWidget {
   }
 }
 
-class _TopPerformersCard extends StatelessWidget {
+/// Top performers from real Firestore data, ranked by total calls.
+class _TopPerformersCard extends ConsumerWidget {
   const _TopPerformersCard();
 
-  static const _performers = [
-    ('Sarah J.', 98.2),
-    ('Michael R.', 94.5),
-    ('Elena K.', 91.0),
-    ('David L.', 88.4),
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final execKpis = ref.watch(perExecutiveKpiProvider);
+    final topPerformers = execKpis.take(4).toList();
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -656,14 +718,26 @@ class _TopPerformersCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          for (var i = 0; i < _performers.length; i++) ...[
-            _PerformerRow(
-              rank: i + 1,
-              name: _performers[i].$1,
-              score: _performers[i].$2,
-            ),
-            if (i < _performers.length - 1) const SizedBox(height: 24),
-          ],
+          if (topPerformers.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'No data yet',
+                  style: GoogleFonts.inter(fontSize: 14, color: AppColors.outline),
+                ),
+              ),
+            )
+          else
+            for (var i = 0; i < topPerformers.length; i++) ...[
+              _PerformerRow(
+                rank: i + 1,
+                name: topPerformers[i]['name'] as String? ?? 'Unknown',
+                totalCalls: topPerformers[i]['totalCalls'] as int? ?? 0,
+                maxCalls: topPerformers.first['totalCalls'] as int? ?? 1,
+              ),
+              if (i < topPerformers.length - 1) const SizedBox(height: 24),
+            ],
           const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,
@@ -694,8 +768,9 @@ class _TopPerformersCard extends StatelessWidget {
 class _PerformerRow extends StatelessWidget {
   final int rank;
   final String name;
-  final double score;
-  const _PerformerRow({required this.rank, required this.name, required this.score});
+  final int totalCalls;
+  final int maxCalls;
+  const _PerformerRow({required this.rank, required this.name, required this.totalCalls, required this.maxCalls});
 
   @override
   Widget build(BuildContext context) {
@@ -738,7 +813,7 @@ class _PerformerRow extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$score%',
+                    '$totalCalls calls',
                     style: GoogleFonts.inter(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -751,7 +826,7 @@ class _PerformerRow extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(99),
                 child: LinearProgressIndicator(
-                  value: score / 100,
+                  value: maxCalls > 0 ? totalCalls / maxCalls : 0,
                   minHeight: 6,
                   backgroundColor: AppColors.surfaceContainer,
                   valueColor: const AlwaysStoppedAnimation(AppColors.primary),
@@ -801,7 +876,7 @@ class _LiveCallFeedTable extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Real-time AI analysis & outcomes',
+                      'Real-time call activity',
                       style: GoogleFonts.inter(fontSize: 12, color: AppColors.onSurfaceVariant),
                     ),
                   ],

@@ -137,6 +137,55 @@ Map<String, dynamic> _computeKpi(List<Map<String, dynamic>> calls) {
   };
 }
 
+/// Per-executive KPIs computed from call records.
+final perExecutiveKpiProvider =
+    Provider<List<Map<String, dynamic>>>((ref) {
+  final calls = ref.watch(callsStreamProvider).valueOrNull ?? [];
+  final executives = ref.watch(executivesStreamProvider).valueOrNull ?? [];
+  if (calls.isEmpty || executives.isEmpty) return [];
+
+  final Map<String, List<Map<String, dynamic>>> callsByExec = {};
+  for (final call in calls) {
+    final execId = call['executiveId'] as String? ?? '';
+    callsByExec.putIfAbsent(execId, () => []).add(call);
+  }
+
+  final results = <Map<String, dynamic>>[];
+  for (final exec in executives) {
+    final execId = exec['id'] as String? ?? '';
+    final name = exec['name'] as String? ?? 'Unknown';
+    final isActive = exec['isActive'] as bool? ?? false;
+    final execCalls = callsByExec[execId] ?? [];
+    final totalCalls = execCalls.length;
+    final nonMissed = execCalls.where((c) => (c['duration'] as int? ?? 0) >= 5).toList();
+    final avgDurSec = nonMissed.isEmpty
+        ? 0
+        : (nonMissed.fold<int>(0, (s, c) => s + (c['duration'] as int? ?? 0)) / nonMissed.length).round();
+    final talkTime = execCalls.fold<int>(0, (s, c) => s + (c['duration'] as int? ?? 0));
+    final incoming = execCalls.where((c) => c['direction'] == 'incoming').length;
+    final outgoing = execCalls.where((c) => c['direction'] == 'outgoing').length;
+    final missed = execCalls.where((c) =>
+        (c['duration'] as int? ?? 0) < 5 && c['direction'] == 'incoming').length;
+
+    results.add({
+      'executiveId': execId,
+      'name': name,
+      'isActive': isActive,
+      'totalCalls': totalCalls,
+      'incoming': incoming,
+      'outgoing': outgoing,
+      'missed': missed,
+      'avgDuration': _formatDuration(avgDurSec),
+      'avgDurationSec': avgDurSec,
+      'talkTime': talkTime,
+      'talkTimeFormatted': _formatDuration(talkTime),
+    });
+  }
+
+  results.sort((a, b) => (b['totalCalls'] as int).compareTo(a['totalCalls'] as int));
+  return results;
+});
+
 String _formatDuration(int seconds) {
   if (seconds == 0) return '0s';
   final h = seconds ~/ 3600;

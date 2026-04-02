@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:salestrack_web/core/firestore_providers.dart';
 import 'package:salestrack_web/core/theme.dart';
 
-class HeadlineStatsSection extends StatelessWidget {
+class HeadlineStatsSection extends ConsumerWidget {
   const HeadlineStatsSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final agg = ref.watch(aggregatedKpiProvider);
+    final executives = ref.watch(executivesStreamProvider).valueOrNull ?? [];
+    final activeCount = executives.where((e) => e['isActive'] == true).length;
+    final totalExecs = executives.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -69,39 +76,44 @@ class HeadlineStatsSection extends StatelessWidget {
               mainAxisSpacing: 24,
               crossAxisSpacing: 24,
               childAspectRatio: 1.6,
-              children: const [
+              children: [
                 _KpiCard(
                   label: 'Avg Handle Time',
-                  value: '04:12',
-                  badge: '-12%',
+                  value: '${agg['avgDuration']}',
+                  badge: 'Live',
                   badgePositive: true,
-                  progress: 0.80,
+                  progress: null,
                   progressColor: AppColors.primary,
                 ),
                 _KpiCard(
-                  label: 'Sentiment Score',
-                  value: '88%',
-                  badge: '+5.2%',
+                  label: 'Total Calls',
+                  value: '${agg['totalCalls']}',
+                  badge: '${agg['incoming']} IN / ${agg['outgoing']} OUT',
                   badgePositive: true,
-                  progress: 0.88,
+                  progress: null,
                   progressColor: AppColors.secondaryContainer,
                 ),
                 _KpiCard(
-                  label: 'Resolution Rate',
-                  value: '94.2%',
-                  badge: '-0.8%',
+                  label: 'Missed Calls',
+                  value: '${agg['missed']}',
+                  badge: agg['totalCalls'] > 0
+                      ? '${((agg['missed'] as int) / (agg['totalCalls'] as int) * 100).toStringAsFixed(1)}%'
+                      : '0%',
                   badgePositive: false,
-                  progress: 0.94,
-                  progressColor: AppColors.primaryContainer,
+                  progress: agg['totalCalls'] > 0
+                      ? (agg['missed'] as int) / (agg['totalCalls'] as int)
+                      : 0.0,
+                  progressColor: AppColors.tertiary,
                 ),
                 _KpiCard(
                   label: 'Active Agents',
-                  value: '42/48',
+                  value: '$activeCount/$totalExecs',
                   badge: 'Live',
                   badgePositive: null,
                   progress: null,
                   progressColor: null,
                   showAvatars: true,
+                  avatarCount: activeCount,
                 ),
               ],
             );
@@ -168,6 +180,7 @@ class _KpiCard extends StatelessWidget {
   final double? progress;
   final Color? progressColor;
   final bool showAvatars;
+  final int avatarCount;
 
   const _KpiCard({
     required this.label,
@@ -177,6 +190,7 @@ class _KpiCard extends StatelessWidget {
     required this.progress,
     required this.progressColor,
     this.showAvatars = false,
+    this.avatarCount = 0,
   });
 
   @override
@@ -276,45 +290,49 @@ class _KpiCard extends StatelessWidget {
       const Color(0xFFF59E0B),
       const Color(0xFFEC4899),
     ];
+    final displayCount = avatarCount > 3 ? 3 : avatarCount;
+    final overflow = avatarCount > 3 ? avatarCount - 3 : 0;
+
     return SizedBox(
       height: 28,
       child: Stack(
         children: [
-          for (var i = 0; i < colors.length; i++)
+          for (var i = 0; i < displayCount; i++)
             Positioned(
               left: i * 18.0,
               child: Container(
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: colors[i],
+                  color: colors[i % colors.length],
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),
               ),
             ),
-          Positioned(
-            left: 3 * 18.0,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: Center(
-                child: Text(
-                  '+39',
-                  style: GoogleFonts.inter(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+          if (overflow > 0)
+            Positioned(
+              left: displayCount * 18.0,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: Center(
+                  child: Text(
+                    '+$overflow',
+                    style: GoogleFonts.inter(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

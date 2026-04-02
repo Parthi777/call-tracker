@@ -1,12 +1,19 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:salestrack_web/core/firestore_providers.dart';
 import 'package:salestrack_web/core/theme.dart';
 
-class TopPerformersSection extends StatelessWidget {
+class TopPerformersSection extends ConsumerWidget {
   const TopPerformersSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final execKpis = ref.watch(perExecutiveKpiProvider);
+    final topExecs = execKpis.take(3).toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,43 +50,54 @@ class TopPerformersSection extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        // Agent cards
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final crossAxisCount = constraints.maxWidth > 900 ? 3 : 1;
-            return GridView.count(
-              crossAxisCount: crossAxisCount,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 32,
-              crossAxisSpacing: 32,
-              childAspectRatio: 1.3,
-              children: const [
-                _AgentCard(
-                  name: 'Julian Schmidt',
-                  role: 'Senior Agent • Tier 1',
-                  calls: '142',
-                  csat: '4.9',
-                  trend: '+18%',
-                  sparklineHeights: [0.40, 0.60, 0.45, 0.75, 0.65, 0.90, 1.0],
-                ),
-                _AgentCard(
-                  name: 'Maya Lin',
-                  role: 'Specialist • Fintech',
-                  calls: '128',
-                  csat: '4.8',
-                  trend: '+12%',
-                  sparklineHeights: [0.30, 0.50, 0.85, 0.65, 0.75, 0.80, 0.85],
-                ),
-                _SpotlightCard(
-                  name: 'Derrick Wells',
-                  role: 'Lead Strategist',
-                  targetReach: '114%',
-                ),
-              ],
-            );
-          },
-        ),
+        if (topExecs.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Text(
+                'No performer data available yet',
+                style: GoogleFonts.inter(fontSize: 14, color: AppColors.outline),
+              ),
+            ),
+          )
+        else
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = constraints.maxWidth > 900
+                  ? min(3, topExecs.length)
+                  : 1;
+              final children = <Widget>[];
+              for (var i = 0; i < topExecs.length; i++) {
+                final exec = topExecs[i];
+                final totalCalls = exec['totalCalls'] as int? ?? 0;
+                if (i == topExecs.length - 1 && topExecs.length >= 3) {
+                  children.add(_SpotlightCard(
+                    name: exec['name'] as String? ?? 'Unknown',
+                    role: 'Top Performer',
+                    targetReach: '$totalCalls calls',
+                  ));
+                } else {
+                  children.add(_AgentCard(
+                    name: exec['name'] as String? ?? 'Unknown',
+                    role: '${exec['incoming']} IN / ${exec['outgoing']} OUT',
+                    calls: '$totalCalls',
+                    avgDuration: exec['avgDuration'] as String? ?? '0s',
+                    talkTime: exec['talkTimeFormatted'] as String? ?? '0s',
+                  ));
+                }
+              }
+
+              return GridView.count(
+                crossAxisCount: crossAxisCount,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 32,
+                crossAxisSpacing: 32,
+                childAspectRatio: 1.3,
+                children: children,
+              );
+            },
+          ),
       ],
     );
   }
@@ -89,17 +107,15 @@ class _AgentCard extends StatefulWidget {
   final String name;
   final String role;
   final String calls;
-  final String csat;
-  final String trend;
-  final List<double> sparklineHeights;
+  final String avgDuration;
+  final String talkTime;
 
   const _AgentCard({
     required this.name,
     required this.role,
     required this.calls,
-    required this.csat,
-    required this.trend,
-    required this.sparklineHeights,
+    required this.avgDuration,
+    required this.talkTime,
   });
 
   @override
@@ -137,14 +153,13 @@ class _AgentCardState extends State<_AgentCard> {
             // Agent info header
             Row(
               children: [
-                // Avatar with online indicator
                 Stack(
                   children: [
                     CircleAvatar(
                       radius: 28,
                       backgroundColor: AppColors.surfaceContainerHigh,
                       child: Text(
-                        widget.name.split(' ').map((w) => w[0]).join(),
+                        widget.name.split(' ').map((w) => w.isNotEmpty ? w[0] : '').join(),
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -208,8 +223,8 @@ class _AgentCardState extends State<_AgentCard> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _StatChip(
-                    label: 'CSAT',
-                    value: widget.csat,
+                    label: 'AVG DUR',
+                    value: widget.avgDuration,
                     valueColor: AppColors.primary,
                   ),
                 ),
@@ -217,19 +232,19 @@ class _AgentCardState extends State<_AgentCard> {
             ),
             const Spacer(),
 
-            // Efficiency trend
+            // Talk time
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Efficiency Trend',
+                  'Total Talk Time',
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: AppColors.onSurfaceVariant,
                   ),
                 ),
                 Text(
-                  widget.trend,
+                  widget.talkTime,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -237,39 +252,6 @@ class _AgentCardState extends State<_AgentCard> {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-
-            // Sparkline
-            SizedBox(
-              height: 40,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (var i = 0; i < widget.sparklineHeights.length; i++) ...[
-                    Expanded(
-                      child: FractionallySizedBox(
-                        heightFactor: widget.sparklineHeights[i],
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Color.lerp(
-                              const Color(0xFFD1FAE5),
-                              AppColors.primaryContainer,
-                              i / (widget.sparklineHeights.length - 1),
-                            ),
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(2),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (i < widget.sparklineHeights.length - 1)
-                      const SizedBox(width: 4),
-                  ],
-                ],
-              ),
             ),
           ],
         ),
@@ -344,8 +326,8 @@ class _SpotlightCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF064E3B), // emerald-900
-            Color(0xFF047857), // emerald-700
+            Color(0xFF064E3B),
+            Color(0xFF047857),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
@@ -359,7 +341,6 @@ class _SpotlightCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Background decorations
           Positioned(
             top: -40,
             right: -40,
@@ -384,8 +365,6 @@ class _SpotlightCard extends StatelessWidget {
               ),
             ),
           ),
-
-          // Content
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -395,7 +374,7 @@ class _SpotlightCard extends StatelessWidget {
                     radius: 28,
                     backgroundColor: const Color(0xFF34D399),
                     child: Text(
-                      name.split(' ').map((w) => w[0]).join(),
+                      name.split(' ').map((w) => w.isNotEmpty ? w[0] : '').join(),
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -428,7 +407,7 @@ class _SpotlightCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                'WEEKLY TARGET REACH',
+                'TOTAL ACTIVITY',
                 style: GoogleFonts.inter(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,

@@ -1,69 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:salestrack_web/core/firestore_providers.dart';
 import 'package:salestrack_web/core/theme.dart';
 
-class _AgentMetric {
-  final String name;
-  final String id;
-  final String aht;
-  final String silence;
-  final String crosstalk;
-  final double adherence;
-  final String status;
-
-  const _AgentMetric({
-    required this.name,
-    required this.id,
-    required this.aht,
-    required this.silence,
-    required this.crosstalk,
-    required this.adherence,
-    required this.status,
-  });
-}
-
-const _mockData = [
-  _AgentMetric(
-    name: 'Julian Schmidt',
-    id: '#44021',
-    aht: '03:45',
-    silence: '8.2%',
-    crosstalk: '4.1%',
-    adherence: 0.92,
-    status: 'Online',
-  ),
-  _AgentMetric(
-    name: 'Maya Lin',
-    id: '#44029',
-    aht: '04:12',
-    silence: '12.5%',
-    crosstalk: '1.8%',
-    adherence: 0.98,
-    status: 'In Call',
-  ),
-  _AgentMetric(
-    name: 'Derrick Wells',
-    id: '#44033',
-    aht: '05:20',
-    silence: '15.2%',
-    crosstalk: '2.4%',
-    adherence: 0.76,
-    status: 'Offline',
-  ),
-];
-
-class MetricsTableSection extends StatefulWidget {
+class MetricsTableSection extends ConsumerStatefulWidget {
   const MetricsTableSection({super.key});
 
   @override
-  State<MetricsTableSection> createState() => _MetricsTableSectionState();
+  ConsumerState<MetricsTableSection> createState() => _MetricsTableSectionState();
 }
 
-class _MetricsTableSectionState extends State<MetricsTableSection> {
+class _MetricsTableSectionState extends ConsumerState<MetricsTableSection> {
   bool _realtime = true;
 
   @override
   Widget build(BuildContext context) {
+    final execKpis = ref.watch(perExecutiveKpiProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
@@ -154,35 +108,46 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
           ),
 
           // Table
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: MediaQuery.of(context).size.width - 320,
-              ),
-              child: DataTable(
-                headingRowColor: WidgetStateProperty.all(
-                  AppColors.surfaceContainerLow.withValues(alpha: 0.5),
+          if (execKpis.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Center(
+                child: Text(
+                  'No agent data available yet',
+                  style: GoogleFonts.inter(fontSize: 14, color: AppColors.outline),
                 ),
-                headingRowHeight: 56,
-                dataRowMinHeight: 72,
-                dataRowMaxHeight: 72,
-                columnSpacing: 32,
-                horizontalMargin: 32,
-                dividerThickness: 0.5,
-                columns: [
-                  _buildColumn('AGENT DETAILS'),
-                  _buildColumn('AHT (MIN)'),
-                  _buildColumn('SILENCE %'),
-                  _buildColumn('CROSSTALK %'),
-                  _buildColumn('ADHERENCE'),
-                  _buildColumn('STATUS'),
-                  _buildColumn('ACTION', alignRight: true),
-                ],
-                rows: _mockData.map(_buildRow).toList(),
+              ),
+            )
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: MediaQuery.of(context).size.width - 320,
+                ),
+                child: DataTable(
+                  headingRowColor: WidgetStateProperty.all(
+                    AppColors.surfaceContainerLow.withValues(alpha: 0.5),
+                  ),
+                  headingRowHeight: 56,
+                  dataRowMinHeight: 72,
+                  dataRowMaxHeight: 72,
+                  columnSpacing: 32,
+                  horizontalMargin: 32,
+                  dividerThickness: 0.5,
+                  columns: [
+                    _buildColumn('AGENT DETAILS'),
+                    _buildColumn('TOTAL CALLS'),
+                    _buildColumn('AVG DURATION'),
+                    _buildColumn('INCOMING'),
+                    _buildColumn('OUTGOING'),
+                    _buildColumn('STATUS'),
+                    _buildColumn('ACTION', alignRight: true),
+                  ],
+                  rows: execKpis.map(_buildRow).toList(),
+                ),
               ),
             ),
-          ),
           const SizedBox(height: 16),
         ],
       ),
@@ -206,9 +171,15 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
     );
   }
 
-  DataRow _buildRow(_AgentMetric agent) {
-    final isCrosstalkHigh =
-        double.tryParse(agent.crosstalk.replaceAll('%', ''))! > 3.0;
+  DataRow _buildRow(Map<String, dynamic> exec) {
+    final name = exec['name'] as String? ?? 'Unknown';
+    final execId = exec['executiveId'] as String? ?? '';
+    final totalCalls = exec['totalCalls'] as int? ?? 0;
+    final avgDuration = exec['avgDuration'] as String? ?? '0s';
+    final incoming = exec['incoming'] as int? ?? 0;
+    final outgoing = exec['outgoing'] as int? ?? 0;
+    final isActive = exec['isActive'] as bool? ?? false;
+    final status = isActive ? 'Online' : 'Offline';
 
     return DataRow(
       cells: [
@@ -222,7 +193,7 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
                   radius: 16,
                   backgroundColor: AppColors.surfaceContainerHigh,
                   child: Text(
-                    agent.name.split(' ').map((w) => w[0]).join(),
+                    name.split(' ').map((w) => w.isNotEmpty ? w[0] : '').join(),
                     style: GoogleFonts.inter(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
@@ -237,7 +208,7 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        agent.name,
+                        name,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.inter(
                           fontSize: 14,
@@ -246,7 +217,7 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
                         ),
                       ),
                       Text(
-                        'ID: ${agent.id}',
+                        'ID: ${execId.length > 6 ? execId.substring(0, 6) : execId}',
                         style: GoogleFonts.inter(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -262,9 +233,9 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
           ),
         ),
 
-        // AHT
+        // Total Calls
         DataCell(Text(
-          agent.aht,
+          '$totalCalls',
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -272,9 +243,9 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
           ),
         )),
 
-        // Silence
+        // Avg Duration
         DataCell(Text(
-          agent.silence,
+          avgDuration,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -282,51 +253,28 @@ class _MetricsTableSectionState extends State<MetricsTableSection> {
           ),
         )),
 
-        // Crosstalk
+        // Incoming
         DataCell(Text(
-          agent.crosstalk,
+          '$incoming',
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: isCrosstalkHigh ? AppColors.tertiary : AppColors.onSurface,
+            color: AppColors.onSurface,
           ),
         )),
 
-        // Adherence
-        DataCell(
-          Row(
-            children: [
-              SizedBox(
-                width: 64,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(99),
-                  child: LinearProgressIndicator(
-                    value: agent.adherence,
-                    minHeight: 6,
-                    backgroundColor: AppColors.surfaceContainerHigh,
-                    valueColor: AlwaysStoppedAnimation(
-                      agent.adherence >= 0.9
-                          ? AppColors.primaryContainer
-                          : AppColors.secondaryContainer,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${(agent.adherence * 100).toInt()}%',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.onSurface,
-                ),
-              ),
-            ],
+        // Outgoing
+        DataCell(Text(
+          '$outgoing',
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.onSurface,
           ),
-        ),
+        )),
 
         // Status
-        DataCell(_StatusBadge(status: agent.status)),
+        DataCell(_StatusBadge(status: status)),
 
         // Action
         DataCell(
